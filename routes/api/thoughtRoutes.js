@@ -1,9 +1,10 @@
 const router = require('express').Router();
-const { get } = require('mongoose');
 const {
     getThoughts,
     getSingleThought,
-    createThought
+    createThought,
+    updateThought,
+    deleteThought
 } = require('../../controllers/thoughtController');
 
 router.route('/')
@@ -11,6 +12,8 @@ router.route('/')
 .post(createThought);
 
 router.route('/:thoughtId')
-.get(getSingleThought);
+.get(getSingleThought)
+.put(updateThought)
+.delete(deleteThought);
 
 module.exports = router;
