@@ -4,18 +4,19 @@ module.exports = {
     async getUsers(req, res) {
         try{
             const users = await User.find()
-            //.populate('thoughts');
+            .populate('thoughts');
             res.json(users);
-        }catch (err){
-            res.status(500).json(err)
+        }catch (error){
+            res.status(500).json(error);
+            console.error(error)
         }
     },
 
     async getSingleUser(req, res) {
         try{
             const user = await User.findOne({ _id: req.params.userId })
-            .select('-__v');
-            //.populate('thoughts');
+            .select('-__v')
+            .populate('thoughts');
             if(!user) {
                 return res.status(404).json({ error: `no user matching id: ${req.params.userId}` })
             }
@@ -60,13 +61,15 @@ module.exports = {
                 res.status(404).json({ error: `no user with id:  ${req.params.userId}` })
             }
 
-            // vaerifies that the user has thoughts and if true deletes them
+            /* verifies that the user has thoughts and if true deletes them
             if (user.thoughts.length > 0) {
                 await Thought.deleteMany({ $in: user.thoughts });
             }
-            res.json({ message: 'User and thoghts deleted' })
+            */
+            res.json({ message: 'User and thoughts deleted' })
         }catch(err) {
-            res.status(500).json(err)
+            res.status(500).json(err);
+            console.error(err)
         }
     }
 }

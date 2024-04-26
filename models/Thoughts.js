@@ -13,8 +13,8 @@ const reactionSchema = new Schema(
             maxlength: 200
         },
         username: {
-            type: Schema.Types.ObjectId,
-            ref: 'users'
+            type: String,
+            required: true
         },
         createdAt: {
             type: Date,
@@ -34,8 +34,8 @@ const thoughtSchema = new Schema(
             default: Date.now
         },
         username: {
-            type: Schema.Types.ObjectId,
-            ref: 'users'
+            type: String,
+            required: true
         },
         reactions: [reactionSchema]
     },
@@ -51,7 +51,7 @@ const thoughtSchema = new Schema(
 thoughtSchema
 .virtual('reactionCount')
 .get(function () {
-    return this.thoughts.length;
+    return this.reactions.length;
 })
 
 const Thought = model('thought', thoughtSchema);
