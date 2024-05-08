@@ -3,9 +3,7 @@ const { User,Thought } = require('../models');
 module.exports = {
     async getUsers(req, res) {
         try{
-            const users = await User.find()
-            .populate('thoughts')
-            .populate('friends');
+            const users = await User.find();
             res.json(users);
         }catch (error){
             res.status(500).json(error);
@@ -17,7 +15,8 @@ module.exports = {
         try{
             const user = await User.findOne({ _id: req.params.userId })
             .select('-__v')
-            .populate('thoughts');
+            .populate('thoughts')
+            .populate('friends');
             if(!user) {
                 return res.status(404).json({ error: `no user matching id: ${req.params.userId}` })
             }
@@ -62,12 +61,11 @@ module.exports = {
                 res.status(404).json({ error: `no user with id:  ${req.params.userId}` })
             }
 
-            /* verifies that the user has thoughts and if true deletes them
-            if (user.thoughts.length > 0) {
-                await Thought.deleteMany({ $in: user.thoughts });
+            for(let i = 0; i < user.thoughts.length; i++ ){
+                await Thought.findByIdAndDelete({ _id: user.thoughts[i]._id })
             }
-            */
-            res.json({ message: 'User and thoughts deleted' })
+
+            res.json({ message: 'User deleted and thoughts deleted' })
         }catch(err) {
             res.status(500).json(err);
             console.error(err)
@@ -117,7 +115,9 @@ module.exports = {
             if (user.friends.includes(friend._id)){
                 user.friends.pop(friend._id);
                 user.save();
+
                 res.status(200).json({ message: `${friend.username} removed from ${user.username}'s friendslist` })
+
             } else {
                 return res.status(404).json({ message: `${friend.username} is not in ${user.username}'s friendslist` })
             }

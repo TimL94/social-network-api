@@ -34,7 +34,7 @@ module.exports = {
             const user = await User.findOne({ _id: req.body.userId });
 
             if(!user) {
-                return res.status(404).jsosn({ error: `no user with id: ${req.body.userId}` })
+                return res.status(404).json({ error: `no user with id: ${req.body.userId}` })
             };
 
             user.thoughts.push(thought);
@@ -78,6 +78,66 @@ module.exports = {
         }catch (err) {
             res.status(500).json(err);
             console.error(err);
+        }
+    },
+
+    async addReaction (req, res) {
+        try{
+            const thought = await Thought.findOne({ _id: req.params.thoughtId });
+
+            if(!thought){
+                return res.status(404).json({ error: `not thought with id matching: ${req.params.thoughtId}` });
+            }
+
+            const reaction = req.body;
+
+            if(!reaction.reactionBody || !reaction.username) {
+
+                if (!reaction.reactionBody){
+                    return res.status(400).json({ error:`you must include a " "reactionBody": "your content here" "` })
+
+                } else if (!reaction.username) {
+                    return res.status(400).json({ error:`you must include a " "username": "username here" "` })
+                }
+            }
+
+            thought.reactions.push({
+                reactionBody: reaction.reactionBody,
+                username: reaction.username
+            })
+            thought.save();
+
+            res.status(200).json({ message: 'reaction added succesfuly' })
+        }catch(err){
+            res.status(500).json(err);
+            console.error(err)
+        }
+    },
+
+    async deleteReaction(req, res) {
+        try {
+            const thoughtId = req.params.thoughtId;
+            const reactionId = req.params.reactionId;
+
+            const thought = await Thought.findOne({ _id: thoughtId });
+
+            if (!thought) {
+                return res.status(404).json({ error: `No thought found with id: ${thoughtId}` });
+            }
+
+            const reactionIndex = thought.reactions.findIndex((react) => String(react._id) === reactionId);
+
+            if (reactionIndex === -1) {
+                return res.status(404).json({ error: `No reaction found with id: ${reactionId}` });
+            }
+ 
+            thought.reactions.splice(reactionIndex, 1);
+            await thought.save();
+            
+            res.status(200).json({ message: 'Reaction deleted successfully' });
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'Internal Server Error' });
         }
     }
 }
