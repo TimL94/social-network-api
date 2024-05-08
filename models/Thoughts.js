@@ -1,6 +1,7 @@
 const { ObjectId } = require('bson');
 const { Schema, model } = require('mongoose');
 
+// schema for creating a reaction
 const reactionSchema = new Schema(
     {
         reactionBody: {
@@ -19,6 +20,7 @@ const reactionSchema = new Schema(
     }
 );
 
+// schema for creating a thought
 const thoughtSchema = new Schema(
     {
         thoughtText: {
@@ -43,7 +45,7 @@ const thoughtSchema = new Schema(
     }
 );
 
-
+// virtual for keeping count of reactions
 thoughtSchema
 .virtual('reactionCount')
 .get(function () {

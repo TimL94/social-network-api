@@ -1,10 +1,10 @@
 const { User,Thought } = require('../models');
 
 module.exports = {
+    // gets all thoughts, only shows the reaction id not the full object
     async getThoughts (req, res) {
         try{
             const thoughts = await Thought.find()
-            .populate('reactions');
             res.json(thoughts);
         }catch (err) {
             res.status(500).json(err);
@@ -12,6 +12,7 @@ module.exports = {
         }
     },
 
+    // gets a single thoguht by its _id and shows the full reaction object for each reaction it has
     async getSingleThought (req, res) {
         try{
             const thought = await Thought.findOne({ _id: req.params.thoughtId })
@@ -27,6 +28,7 @@ module.exports = {
         }
     },
 
+    // creates a thought
     async createThought (req, res) {
         try{
             const thought = await Thought.create(req.body);
@@ -48,6 +50,7 @@ module.exports = {
         }
     },
 
+    // updates a thought by the thought _id
     async updateThought (req, res) {
         try{
             const thought = await Thought.findOneAndUpdate(
@@ -66,6 +69,7 @@ module.exports = {
         }
     },
 
+    // deletes a thought by the _id
     async deleteThought (req, res) {
         try{
             const thought = await Thought.findOneAndDelete({ _id: req.params.thoughtId });
@@ -81,6 +85,7 @@ module.exports = {
         }
     },
 
+    // creates a reaction associated to a specific thought
     async addReaction (req, res) {
         try{
             const thought = await Thought.findOne({ _id: req.params.thoughtId });
@@ -114,6 +119,7 @@ module.exports = {
         }
     },
 
+    // deletes a reaction by it's _id
     async deleteReaction(req, res) {
         try {
             const thoughtId = req.params.thoughtId;

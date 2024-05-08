@@ -1,6 +1,7 @@
 const { User,Thought } = require('../models');
 
 module.exports = {
+    //gets all users and associated thoughts and friends, only displays the _id for thoughts and friends
     async getUsers(req, res) {
         try{
             const users = await User.find();
@@ -11,6 +12,7 @@ module.exports = {
         }
     },
 
+    // gets a single user by _id and displays the full objects of all friends and thoughts
     async getSingleUser(req, res) {
         try{
             const user = await User.findOne({ _id: req.params.userId })
@@ -26,6 +28,7 @@ module.exports = {
         }
     },
     
+    // creates a user
     async createUser(req, res) {
         try{
             const user = await User.create(req.body);
@@ -35,6 +38,7 @@ module.exports = {
         }
     },
 
+    //updates a user based on _id
     async updateUser (req, res) {
         try{
             const user = await User.findOneAndUpdate(
@@ -53,6 +57,7 @@ module.exports = {
         }
     },
 
+    // deletes a user based on _id
     async deleteUser (req, res) {
         try{
             const user = await User.findOneAndDelete({ _id: req.params.userId });
@@ -61,6 +66,7 @@ module.exports = {
                 res.status(404).json({ error: `no user with id:  ${req.params.userId}` })
             }
 
+            // iterates over the user's thoughts list and removes any thoughts from the database with the user
             for(let i = 0; i < user.thoughts.length; i++ ){
                 await Thought.findByIdAndDelete({ _id: user.thoughts[i]._id })
             }
@@ -72,11 +78,13 @@ module.exports = {
         }
     },
 
+    // adds a friend to users friends list based on both user's _ids
     async addFriend (req, res) {
         try{
             const user = await User.findOne({_id: req.params.userId});
             const friend = await User.findOne({_id: req.params.friendId});
 
+            // aditional logic to verify that both users exist
             if (!user || !friend){
                 if (!user) {
                     return res.status(404).json({ error: `no user with id matching : ${user}` })
@@ -99,11 +107,13 @@ module.exports = {
         }
     },
 
+    // removes a user from another user's friends list by associated _ids
     async deleteFriend (req, res) {
         try{
             const user = await User.findOne({_id: req.params.userId});
             const friend = await User.findOne({_id: req.params.friendId});
 
+            // aditional logic to verify that both users exist
             if (!user || !friend){
                 if (!user) {
                     return res.status(404).json({ error: `no user with id matching : ${user}` })
@@ -112,6 +122,7 @@ module.exports = {
                 }
             }
 
+            
             if (user.friends.includes(friend._id)){
                 user.friends.pop(friend._id);
                 user.save();

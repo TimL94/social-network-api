@@ -1,5 +1,6 @@
 const { Schema, model } = require('mongoose');
 
+// schema for creating a user, regex is used to verify the email is in correct format
 const userSchema = new Schema(
     {
         username: { 
@@ -36,6 +37,7 @@ const userSchema = new Schema(
     }
 );
 
+// virtual for displaying number of friends each user has
 userSchema.virtual('friendCount').get(function () {
     return this.friends.length;
 })
